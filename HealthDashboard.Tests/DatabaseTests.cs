@@ -1,10 +1,13 @@
 using System;
+using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 using HealthDashboard.Core;
 using HealthDashboard.Core.Models;
+using HealthDashboard.Core.CsvIngestion;
 
 namespace HealthDashboard.Tests
 {
@@ -195,6 +198,114 @@ namespace HealthDashboard.Tests
                 Assert.Equal(15.2, finalMetric.BodyFatPercent);
                 Assert.Equal(2500, finalMetric.CronoCalsIn);
                 Assert.Equal(160, finalMetric.CronoProteinG);
+            }
+        }
+
+        // ── Cronometer Importer Tests ─────────────────────────────────────────────
+
+        [Fact]
+        public async Task TestCronoImporter_ImportsCompletedDays_SkipsIncomplete()
+        {
+            // Arrange: 2 completed rows, 1 incomplete row
+            const string csvContent =
+                "Date,Energy (kcal),Protein (g),Carbs (g),Fat (g),Completed\n" +
+                "2026-01-10,2000.4,150.3,200.7,70.1,true\n" +
+                "2026-01-11,1800.0,130.0,180.0,65.0,false\n" +   // ← should be skipped
+                "2026-01-12,2200.8,165.6,220.4,75.9,true\n";
+
+            var tmpPath = Path.GetTempFileName();
+            await File.WriteAllTextAsync(tmpPath, csvContent);
+
+            try
+            {
+                using var context = new AppDbContext(_options);
+                DbInitializer.Initialize(context);
+
+                // Act
+                var result = await CronoImporter.ImportAsync(context, tmpPath);
+
+                // Assert: errors first so failures are diagnostic
+                Assert.True(result.Errors.Count == 0,
+                    $"Expected no errors but got: {string.Join("; ", result.Errors)}");
+                Assert.True(result.Imported == 2,
+                    $"Expected 2 imported but got {result.Imported} (skipped={result.Skipped})");
+                Assert.Equal(1, result.Skipped);
+
+                // Assert: DB state for first completed day
+                // MidpointRounding.AwayFromZero: 2000.4→2000, 150.3→150, 200.7→201, 70.1→70
+                var day1 = context.DailyMetrics.Single(m => m.Date == "2026-01-10");
+                Assert.Equal(2000, day1.CronoCalsIn);
+                Assert.Equal(150,  day1.CronoProteinG);
+                Assert.Equal(201,  day1.CronoCarbsG);
+                Assert.Equal(70,   day1.CronoFatG);
+
+                // Assert: DB state for second completed day
+                // 2200.8→2201, 165.6→166, 220.4→220, 75.9→76
+                var day2 = context.DailyMetrics.Single(m => m.Date == "2026-01-12");
+                Assert.Equal(2201, day2.CronoCalsIn);
+                Assert.Equal(166,  day2.CronoProteinG);
+                Assert.Equal(220,  day2.CronoCarbsG);
+                Assert.Equal(76,   day2.CronoFatG);
+
+                // Assert: incomplete day was NOT inserted
+                Assert.Null(context.DailyMetrics.FirstOrDefault(m => m.Date == "2026-01-11"));
+            }
+            finally
+            {
+                File.Delete(tmpPath);
+            }
+        }
+
+        [Fact]
+        public async Task TestCronoImporter_SafeUpsert_PreservesExistingWeight()
+        {
+            // Arrange: pre-populate weight + body fat for 2026-01-10
+            const string csvContent =
+                "Date,Energy (kcal),Protein (g),Carbs (g),Fat (g),Completed\n" +
+                "2026-01-10,2500.0,180.0,250.0,80.0,true\n";
+
+            var tmpPath = Path.GetTempFileName();
+            await File.WriteAllTextAsync(tmpPath, csvContent);
+
+            try
+            {
+                using var context = new AppDbContext(_options);
+                DbInitializer.Initialize(context);
+
+                // Simulate weight already synced for this date from another source
+                context.DailyMetrics.Add(new DailyMetric
+                {
+                    Date          = "2026-01-10",
+                    WeightKg      = 82.5,
+                    BodyFatPercent = 16.4
+                });
+                context.SaveChanges();
+
+                // Act: Cronometer import arrives for the same date
+                var result = await CronoImporter.ImportAsync(context, tmpPath);
+
+                // Assert: errors first so failures are diagnostic
+                Assert.True(result.Errors.Count == 0,
+                    $"Expected no errors but got: {string.Join("; ", result.Errors)}");
+                Assert.True(result.Imported == 1,
+                    $"Expected 1 imported but got {result.Imported} (skipped={result.Skipped})");
+
+                // Clear EF's change tracker so the next query reads fresh data from the DB.
+                // The raw SQL upsert bypasses EF, so cached entities are stale.
+                context.ChangeTracker.Clear();
+
+                // Assert: nutrition was written, weight/body fat were NOT overwritten
+                var metric = context.DailyMetrics.Single(m => m.Date == "2026-01-10");
+                Assert.Equal(82.5, metric.WeightKg);         // preserved
+                Assert.Equal(16.4, metric.BodyFatPercent);   // preserved
+                Assert.Equal(2500, metric.CronoCalsIn);      // new
+                Assert.Equal(180,  metric.CronoProteinG);    // new
+                Assert.Equal(250,  metric.CronoCarbsG);      // new
+                Assert.Equal(80,   metric.CronoFatG);        // new
+            }
+            finally
+            {
+                File.Delete(tmpPath);
             }
         }
     }
