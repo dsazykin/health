@@ -25,7 +25,7 @@ namespace HealthDashboard.Core.Models
         [Required]
         public string Date { get; set; } = string.Empty; // YYYY-MM-DD ISO 8601
 
-        public double WeightKg { get; set; }
+        public double? WeightKg { get; set; }
 
         public double? BodyFatPercent { get; set; }
 
