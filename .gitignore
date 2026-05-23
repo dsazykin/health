@@ -1,6 +1,7 @@
 # Antigravity CLI
 .antigravitycli/*
 GEMINI.md
+DEVELOPER.md
 
 # Core .NET / C# Build Outputs
 [Bb]in/
