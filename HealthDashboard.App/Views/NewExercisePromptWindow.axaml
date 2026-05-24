@@ -1,0 +1,84 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:HealthDashboard.App.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="550" d:DesignHeight="450"
+        x:Class="HealthDashboard.App.Views.NewExercisePromptWindow"
+        x:DataType="vm:NewExercisePromptViewModel"
+        Title="New Exercises Discovered"
+        Width="550"
+        Height="450"
+        WindowStartupLocation="CenterOwner"
+        CanResize="False"
+        Background="#1E1E2E">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="20">
+        <!-- Header -->
+        <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,15">
+            <TextBlock Text="New Exercises Detected" 
+                       FontSize="20" 
+                       FontWeight="Bold" 
+                       Foreground="#F5C2E7"/>
+            <TextBlock Text="Please classify the custom exercises below so they can be saved to your dashboard metrics." 
+                       TextWrapping="Wrap" 
+                       FontSize="13" 
+                       Foreground="#CDD6F4"/>
+        </StackPanel>
+
+        <!-- Scrollable list of exercises -->
+        <ScrollViewer Grid.Row="1" Margin="0,5,0,15">
+            <ItemsControl ItemsSource="{Binding Items}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:NewExerciseItemViewModel">
+                        <Border Background="#313244" 
+                                CornerRadius="8" 
+                                Padding="15" 
+                                Margin="0,0,0,10"
+                                BorderBrush="#45475A"
+                                BorderThickness="1">
+                            <Grid ColumnDefinitions="*,Auto,Auto">
+                                <!-- Exercise Name -->
+                                <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,10,0">
+                                    <TextBlock Text="Exercise" FontSize="11" Foreground="#A6ADC8"/>
+                                    <TextBlock Text="{Binding ExerciseName}" 
+                                               FontSize="15" 
+                                               FontWeight="SemiBold" 
+                                               Foreground="#FFFFFF" 
+                                               TextWrapping="Wrap"/>
+                                </StackPanel>
+
+                                <!-- Muscle Group Dropdown -->
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,10,0" Width="150">
+                                    <TextBlock Text="Muscle Group" FontSize="11" Foreground="#A6ADC8" Margin="0,0,0,4"/>
+                                    <ComboBox ItemsSource="{Binding $parent[Window].DataContext.AvailableMuscleGroups}"
+                                              SelectedItem="{Binding SelectedMuscleGroup}"
+                                              HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+
+                                <!-- Movement Pattern Dropdown -->
+                                <StackPanel Grid.Column="2" VerticalAlignment="Center" Width="150">
+                                    <TextBlock Text="Movement Pattern" FontSize="11" Foreground="#A6ADC8" Margin="0,0,0,4"/>
+                                    <ComboBox ItemsSource="{Binding $parent[Window].DataContext.AvailableMovementPatterns}"
+                                              SelectedItem="{Binding SelectedMovementPattern}"
+                                              HorizontalAlignment="Stretch"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- Actions -->
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="10">
+            <Button Content="Save &amp; Continue" 
+                    Click="OnSaveClicked" 
+                    Background="#F5C2E7" 
+                    Foreground="#11111B" 
+                    FontWeight="SemiBold" 
+                    Padding="15,8"
+                    CornerRadius="6"/>
+        </StackPanel>
+    </Grid>
+</Window>

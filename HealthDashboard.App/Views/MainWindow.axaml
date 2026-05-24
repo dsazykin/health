@@ -3,18 +3,122 @@
         xmlns:vm="using:HealthDashboard.App.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
         x:Class="HealthDashboard.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
-        Title="HealthDashboard.App">
+        Title="Health Tracker &amp; Workout Dashboard"
+        Width="800"
+        Height="500"
+        WindowStartupLocation="CenterScreen"
+        Background="#11111B">
 
     <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <TextBlock Text="{Binding Greeting}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+    <Grid>
+        <!-- Background Gradient -->
+        <Border>
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
+                    <GradientStop Color="#0F0C20" Offset="0.0"/>
+                    <GradientStop Color="#15102A" Offset="0.5"/>
+                    <GradientStop Color="#1E1E2E" Offset="1.0"/>
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
 
+        <!-- Main Content Area -->
+        <Grid RowDefinitions="Auto,*,Auto" Margin="30">
+            <!-- Header -->
+            <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,20">
+                <TextBlock Text="HEALTH &amp; WORKOUTS DASHBOARD" 
+                           FontSize="28" 
+                           FontWeight="Black" 
+                           Foreground="#F5C2E7"
+                           LetterSpacing="2"/>
+                <TextBlock Text="Manage your workouts, metrics, and athletic progression in one modern interface." 
+                           FontSize="14" 
+                           Foreground="#A6ADC8"/>
+                <Border Height="2" Background="#45475A" HorizontalAlignment="Stretch" Margin="0,10,0,0"/>
+            </StackPanel>
+
+            <!-- Main Feature Card -->
+            <Grid Grid.Row="1" ColumnDefinitions="*,*" Margin="0,20">
+                <!-- Left panel: Welcome / Greeting -->
+                <StackPanel Grid.Column="0" Spacing="15" VerticalAlignment="Center" Margin="0,0,20,0">
+                    <TextBlock Text="{Binding Greeting}" 
+                               FontSize="22" 
+                               FontWeight="Bold" 
+                               Foreground="#FFFFFF" 
+                               TextWrapping="Wrap"/>
+                    <TextBlock Text="Ready to analyze your training? Import your workout history from Hevy (CSV format) to seamlessly calculate TDEE, track muscle groups, analyze set volumes, and synchronize heart rate metrics." 
+                               FontSize="13" 
+                               Foreground="#CDD6F4" 
+                               LineHeight="20"
+                               TextWrapping="Wrap"/>
+                </StackPanel>
+
+                <!-- Right panel: CSV Import Action Card -->
+                <Border Grid.Column="1" 
+                        Background="#1E1E2E" 
+                        BorderBrush="#F5C2E7" 
+                        BorderThickness="1" 
+                        CornerRadius="16" 
+                        Padding="25"
+                        VerticalAlignment="Center">
+                    <StackPanel Spacing="20" HorizontalAlignment="Center">
+                        <TextBlock Text="Ingest Training History" 
+                                   FontSize="18" 
+                                   FontWeight="Bold" 
+                                   Foreground="#F5C2E7"
+                                   HorizontalAlignment="Center"/>
+                        
+                        <TextBlock Text="Import a Hevy CSV export to parse and integrate all logs. Any unrecognized new exercises will trigger a categorizer dialog." 
+                                   FontSize="12" 
+                                   Foreground="#A6ADC8" 
+                                   TextAlignment="Center" 
+                                   TextWrapping="Wrap"/>
+
+                        <Button Command="{Binding ImportHevyCsvCommand}"
+                                Background="#F5C2E7"
+                                Foreground="#11111B"
+                                FontWeight="Bold"
+                                FontSize="14"
+                                Padding="30,12"
+                                CornerRadius="8"
+                                HorizontalAlignment="Center">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <TextBlock Text="📁" FontSize="16" VerticalAlignment="Center"/>
+                                <TextBlock Text="Import Hevy CSV" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Footer: Status Bar -->
+            <Border Grid.Row="2" 
+                    Background="#1E1E2E" 
+                    BorderBrush="#313244" 
+                    BorderThickness="1" 
+                    CornerRadius="8" 
+                    Padding="12,10">
+                <Grid ColumnDefinitions="Auto,*">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                        <Ellipse Width="8" Height="8" Fill="#A6E3A1"/>
+                        <TextBlock Text="System Status:" FontSize="12" FontWeight="Bold" Foreground="#89B4FA" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" 
+                               Text="{Binding StatusText}" 
+                               FontSize="12" 
+                               Foreground="#CDD6F4" 
+                               Margin="8,0,0,0" 
+                               TextWrapping="Wrap"
+                               VerticalAlignment="Center"/>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
 </Window>

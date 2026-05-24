@@ -64,3 +64,9 @@ Thumbs.db
 *.log
 *.dmp
 *.stackdump
+
+# Session Blackboard
+.session_map.json
+
+# Cortex Plan
+.cortex_plan.md
