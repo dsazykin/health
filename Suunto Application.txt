@@ -1,0 +1,26 @@
+Athletic Progression & Health Dashboard
+
+
+
+Currently in local development as a 100% offline-first, private desktop application. Source code and documentation are hosted at https://github.com/dsazykin/health
+
+
+
+This is a cross-platform native desktop application built using .NET and Avalonia UI that operates as a 100% offline-first, local health and fitness aggregator.
+The application parses and merges disparate fitness data sources—specifically Hevy (for strength training logs), Cronometer (for daily nutritional intake and macronutrient profiles), and Suunto (for cardiovascular telemetry, daily active calories, sleep duration, and Heart Rate Variability metrics). The parsed data is structured and stored locally in a secure, encrypted SQLite database, allowing users to keep absolute ownership of their personal biometrics. In the future in-house solutions will be developed to replace the third-party applications for training and logging.
+
+- Absolute Data Privacy & Local Ownership: The application is designed to be 100% offline-first. Personal health metrics, biometrics, and GPS workout coordinates are never uploaded to a third-party cloud.
+- Multi-Source Telemetry Stitching: The core algorithm automatically cross-references and stitches strength-training sessions (Hevy) with cardiovascular effort, sleep profiles, and recovery telemetry fetched from Suunto devices within matching ±15-minute time windows.
+- Adaptive Metabolic Analytics (TDEE Engine): Computes accurate dynamic Total Daily Energy Expenditure (TDEE) and target caloric requirements using smoothed exponential moving averages (EMA) of weight changes mapped against daily nutritional ingestion.
+- Recovery, Strain, & Readiness Matrix: Combines Suunto sleep duration and resting HRV (relative to a 60-day running average) with training volume to provide users with a daily training readiness score.
+
+
+
+I am interested in designing a wrist-based strength and conditioning logging app ("Gym Log Companion") that runs directly on Suunto watches. The goal of this SuuntoPlus Sport App is to allow users to log their resistance training sessions (exercises, sets, repetitions, and weights) directly from their wrist, eliminating the need to carry a mobile phone on the gym floor.
+
+Key high-level features would include:
+1. Wrist-Based Set & Rep Logging: An intuitive user interface to quickly log completed sets, select weights, and record repetitions during a workout.
+2. Auto-Rest Timer: An automatic countdown timer triggered immediately upon logging a completed set, with haptic and audio notifications when the next set should begin.
+3. Real-Time Volume & Load Tracking: On-watch calculations displaying cumulative training volume (kg/lbs) and number of completed hard sets per muscle group for the current session.
+4. Relative Intensity & Heart Rate Integration: Real-time tracking of heart rate recovery intervals between sets to estimate cardiovascular strain during anaerobic training.
+5. Seamless API Sync: Direct synchronization of structured set-by-set logs back to the Suunto Cloud, allowing external health hubs to stitch strength volume with daily active recovery telemetry.

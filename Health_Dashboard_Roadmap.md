@@ -94,6 +94,10 @@ The database lives in the OS user's local application data directory (`Environme
 * Listen on a lightweight, temporary local HTTP listener (`http://127.0.0.1:port/`) to capture the callback parameter.
 * Tokens are stored securely using OS-native APIs (DPAPI on Windows, Keychain on macOS).
 * **Refresh Logic:** The engine checks `TokenExpiresAt` before any sync and silently executes a refresh token grant if needed.
+* **Branding & Consent Compliance (Suunto API Mandate):**
+  * Display a "Compatible with Suunto" logo/label and a clickable hyperlink to `Suunto.com` on the integration views.
+  * Obtain express user consent via checkbox prompts before executing the OAuth2 handshake.
+  * Support an instant "Disconnect" feature that purges all local keys and securely removes cached user telemetry upon request.
 
 ### 3.2 The Stitching Algorithm
 * Query `Workouts` entries where `SuuntoActivityId` is NULL.
