@@ -53,7 +53,35 @@
                                FontWeight="Bold" 
                                Foreground="#FFFFFF" 
                                TextWrapping="Wrap"/>
-                    <TextBlock Text="Ready to analyze your training? Import your workout history from Hevy (CSV format) to seamlessly calculate TDEE, track muscle groups, analyze set volumes, and synchronize heart rate metrics." 
+
+                    <!-- Latest Calculated TDEE Display Card -->
+                    <Border Background="#1E1E2E"
+                            BorderBrush="#A6E3A1"
+                            BorderThickness="1"
+                            CornerRadius="12"
+                            Padding="15"
+                            HorizontalAlignment="Stretch">
+                        <StackPanel Spacing="3">
+                            <TextBlock Text="CURRENT COMPUTED TDEE" 
+                                       FontSize="11" 
+                                       FontWeight="Bold" 
+                                       Foreground="#A6E3A1" 
+                                       LetterSpacing="1"/>
+                            <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,5,0,0">
+                                <TextBlock Text="{Binding LatestTdeeCalculated}" 
+                                           FontSize="32" 
+                                           FontWeight="Black" 
+                                           Foreground="#FFFFFF"/>
+                                <TextBlock Text="kcal/day" 
+                                           FontSize="14" 
+                                           Foreground="#A6ADC8" 
+                                           VerticalAlignment="Bottom"
+                                           Margin="0,0,0,4"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Border>
+
+                    <TextBlock Text="Ready to analyze your training? Import your workout history from Hevy and your daily summaries from Cronometer to calculate TDEE, track muscle groups, analyze set volumes, and synchronize heart rate metrics." 
                                FontSize="13" 
                                Foreground="#CDD6F4" 
                                LineHeight="20"
@@ -68,32 +96,48 @@
                         CornerRadius="16" 
                         Padding="25"
                         VerticalAlignment="Center">
-                    <StackPanel Spacing="20" HorizontalAlignment="Center">
-                        <TextBlock Text="Ingest Training History" 
+                    <StackPanel Spacing="15" HorizontalAlignment="Center">
+                        <TextBlock Text="Ingest Daily Summaries &amp; Workouts" 
                                    FontSize="18" 
                                    FontWeight="Bold" 
                                    Foreground="#F5C2E7"
                                    HorizontalAlignment="Center"/>
                         
-                        <TextBlock Text="Import a Hevy CSV export to parse and integrate all logs. Any unrecognized new exercises will trigger a categorizer dialog." 
+                        <TextBlock Text="Import a Hevy CSV export to integrate workout details, or a Cronometer daily summaries CSV to integrate daily nutrition &amp; weight logs." 
                                    FontSize="12" 
                                    Foreground="#A6ADC8" 
                                    TextAlignment="Center" 
                                    TextWrapping="Wrap"/>
 
-                        <Button Command="{Binding ImportHevyCsvCommand}"
-                                Background="#F5C2E7"
-                                Foreground="#11111B"
-                                FontWeight="Bold"
-                                FontSize="14"
-                                Padding="30,12"
-                                CornerRadius="8"
-                                HorizontalAlignment="Center">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <TextBlock Text="📁" FontSize="16" VerticalAlignment="Center"/>
-                                <TextBlock Text="Import Hevy CSV" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Button>
+                        <StackPanel Spacing="10">
+                            <Button Command="{Binding ImportHevyCsvCommand}"
+                                    Background="#F5C2E7"
+                                    Foreground="#11111B"
+                                    FontWeight="Bold"
+                                    FontSize="13"
+                                    Padding="20,10"
+                                    CornerRadius="8"
+                                    HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                    <TextBlock Text="🏋️" FontSize="16" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Import Hevy CSV" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+
+                            <Button Command="{Binding ImportCronoCsvCommand}"
+                                    Background="#89B4FA"
+                                    Foreground="#11111B"
+                                    FontWeight="Bold"
+                                    FontSize="13"
+                                    Padding="20,10"
+                                    CornerRadius="8"
+                                    HorizontalAlignment="Stretch">
+                                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
+                                    <TextBlock Text="🍎" FontSize="16" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Import Cronometer CSV" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </StackPanel>
                     </StackPanel>
                 </Border>
             </Grid>
