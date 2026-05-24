@@ -1,0 +1,100 @@
+SUUNTO CLOUD API AGREEMENT FOR COMMERCIAL USE
+1 CONTRACTING PARTIES
+This is a legal agreement by and between Suunto Oy with an address at Tammiston kauppatie 7 A, FI-01510 Vantaa, Finland (Suunto); and you (You or Licensee). By submitting an order you agree to be bound by this Agreement. You hereby represent and warrant that you have the right to enter into this Agreement on behalf of the company that you represent.
+ 
+2 DEFINITIONS
+2.1 Affiliate(s) means any legal entity that is: (a) directly or indirectly controlling a Party; or (b) under the same direct or indirect, domestic or foreign control as a Party; or (c) directly or indirectly controlled by a Party as long as such control lasts. Control shall exist through direct or indirect ownership of fifty percent (50%) or more of the nominal value of the issued equity share capital or of fifty percent (50%) or more of the shares entitling the holders to vote for the election of the members of the board of directors or persons performing similar functions.
+2.2 Agreement means this Agreement.
+2.3 API means Suunto Cloud Application Interfaces as further specified in the applicable specifications limited for use with Members only.
+2.4 API Key means an application key that identifies the Solution with API.
+2.5 Licensed Technology means API, API Key, and all software, documents and other materials delivered by Suunto at its sole discretion including updates, if provided to Licensee hereunder.
+2.6 Member or User means an individual using the Suunto App.
+2.7 Party or Parties means either Suunto or the Licensee or both, as required by the context.
+2.8 Solution means websites, applications, or any other software that uses API.
+2.9 Suunto App is an app connected to Suunto devices which may be amended from time to time.
+ 
+3 OBJECTIVES OF AGREEMENT AND AMENDMENTS
+3.1 Suunto offers for selected partners the possibility to be connected with API and to access data with a number of different capabilities. The API is for non-commercial and commercial use as indicated below.
+3.2 Suunto reserves the right to update this Agreement and/or Licensed Technology at any time without any prior notice. In the event of material change,
+Suunto uses reasonable endeavors to provide the Licensee with a separate prior notice thereof. The Licensee acknowledges and agrees that the continued use of the Licensed Technology shall constitute an acceptance of such change or modification.
+ 
+4 LICENSE GRANT
+4.1 Subject to restrictions and limitation of this Agreement, the Licensed Technology is made accessible to the Licensee for a limited, revocable and non-exclusive use for the purposes of transferring Member’s data between the API and Licensee’s Solution per the consents of the user.
+4.2 No right or license, express or implied, is granted to any part of the Licensed Technology or Suunto services except as expressly set forth above.
+4.3 Utilization of Licensed Technology or Solution may require licenses to Suunto Oy’s or third party’s patents and technologies which are not licensed hereunder; the Licensee shall acquire such rights separately from the relevant parties.
+ 
+5 LICENSEE’S GENERAL RIGHTS AND OBLIGATIONS
+The Licensee further agrees on the following items:(a) to comply with the Suunto Terms of Use and Privacy Policy available at http://www.suunto.com/termsofuse; (b) to be solely responsible and liable for any and all activities made with the Licensee’s API Key; (c) not to violate any law or the rights of any individual or entity and not to expose Members to harm or legal liability as determined by Suunto at its sole discretion; (d) if a Member decided not to be connected to suunto service the Licensee’s Solution must reflect such change as soon as reasonably possible; (e) to comply with any requirements or restrictions given by the Members as the Licensed Technology can be used to provide the Licensee with an access to the content created by Members. The Licensee shall be solely responsible for making use of such Member content in compliance with the Members’ requirements or restrictions;(f) only to request the data that the Licensee needs to operate the Licensee’s Solution; (g) not to request or store Suunto App Member passwords;(h) to inform on the Solution that it is compatible with Suunto products; (i) to show Suunto compatible logo on the Solution and to provide a link to Suunto.com on the relevant page/view of the Solution;(j) to remove from Licensee’s Solution any member content or other information that a Member asks the Licensee to remove timely; (k) to ensure that Users always give their express consent to any data being sent or fetched to or from their account on their behalf. 
+ 
+6 CONTENT AND CONTACT INFORMATION
+6.1 The Licensee needs to provide to Suunto descriptions of the Solution, to be published on Suunto.com or other Suunto channels.
+ 
+7 RESTRICTIONS AND LIMITATIONS
+7.1 Licensee acknowledges and agrees that APIs will have restrictions which may change over time. The restrictions can contain but not limited to number of call, type of data or other ways that limit the use of API as notified. The Licensee shall not:
+(a) use the Licensed Technology for any application that constitutes, promotes or is used in connection with spyware, adware, other malicious programs or code;
+(b) use the Licensed Technology in any manner or for any purpose that violates any law or regulation or any right of any person, including but not limited to intellectual property rights, rights of privacy, or rights of personality;
+(c) use Licensed Technology in any manner that would constitute an infringement of local data storage requirements, privacy laws or regulations including, without limitation General Data Protection Regulation;
+(d) use the Licensed Technology in a manner that adversely impacts the stability of servers or adversely impacts the behavior of other applications using the Licensed Technology;
+(e) sell, lease, or sublicense the Licensed Technology or access thereto or derive revenues from the use or provision of the Licensed Technology as such, but Licensee’s may derive revenues from its s own value-added offering in which the Licensed Technology is utilized as agreed herein;
+(f) use any data received from Suunto services outside of Licensee’s Solution, except to transfer such data to another service provider if the user in question consents to such transfer;
+(g) use web scraping, web harvesting, or web data extraction methods to extract data from Suunto services;
+(h) give Licensee’s API Key to another party unless that party is an agent acting on Licensee’s behalf as an operator of Licensee’s Solution; 
+(i) Include data the Licensee receives from Suunto concerning a User in any advertising creative, without a Member consents to such use;
+(j) directly or indirectly transfer any data the Licensee receives from Suunto to any ad network, ad exchange, data broker, or other advertising or monetization related toolset even if a User consents to such transfer or use; and
+(k) never share Member identifier information with any other services or applications; Licensee agrees to respect privacy and not to mislead, confuse, defraud, or surprise Users or send spam e-mails.
+7.2 The Licensee shall be responsible for all content created by the licensee in or in connection with the Solution, including advertisements and User-generated content. The Licensee agrees not to promote, or provide content referencing, facilitating, containing or using, the following:
+(a) content that is illegal or infringes upon the rights of any third party, including intellectual property rights, privacy, publicity or other personal or proprietary right, or that is deceptive or fraudulent;
+(b) gambling, including without limitation, any online casino, sports books, bingo or poker;
+(c) illegal activity and/or illegal contests, pyramid schemes, sweepstakes or chain letters;
+(d) running, referencing, or facilitating a legally permissible sweepstakes, contest, or other promotion;
+(g) content that is hateful, threatening, defamatory, or pornographic; incites violence; or contains nudity or graphic or gratuitous violence.
+ 
+8 INTELLECTUAL PROPERTY RIGHTS, TRADEMARKS AND TRADE NAMES
+8.1 The Licensed Technology and Suunto services are protected by copyrights and other intellectual property rights and are subject to international treaties. Suunto, its Affiliates and licensors retain and reserve all rights, title, and interest, including any and all intellectual property rights, in and to the Licensed Technology, Suunto  services and data in its databases, as well as in and to all Suunto's products, software and other properties provided to the Licensee or used by Licensee.
+8.2 The technology and service provided by the licensee shall be protected by copyrights and other intellectual property rights and are subject to international treaties. The licensee reserve all rights, title, and interest, including any and all intellectual property rights, in and to said technology and service. 
+8.3 Neither party shall express or imply any affiliation or relationship with or endorsement by itself or its Affiliates. The parties further agree not to make use of, register or attempt to register other party's trademarks or any trademarks, service marks, domain names, brands, logos or symbols confusingly similar to those owned by the party or its Affiliates.
+8.4 The Licensee agrees not to use Suunto or other Suunto’s pages or question & answer areas within Suunto.com to promote Licensee’s Solution without a consent from Suunto.
+ 
+9 WARRANTIES
+THE LICENSED TECHNOLOGY IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS. SUUNTO  EXPRESSLY DISCLAIMS ALL WARRANTIES OF ANY KIND, WHETHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. SUUNTO  MAKES NO WARRANTY THAT (i) THE LICENSED TECHNOLOGY WILL MEET LICENSEES’ REQUIREMENTS, (ii) THE LICENSED TECHNOLOGY WILL BE
+UNINTERRUPTED, TIMELY, SECURE, OR ERROR-FREE, AND/OR THAT (iii) ANY ERRORS IN THE SOFTWARE WILL BE CORRECTED.ANY MATERIAL DOWNLOADED OR OTHERWISE OBTAINED THROUGH THE LICENSED TECHNOLOGY IS DONE AT LICENSEE’S OWN DISCRETION AND RISK AND THE LICENSEE SHALL BE SOLELY RESPONSIBLE FOR ANY DAMAGE TO LICENSEE’S COMPUTER SYSTEM/NETWORK OR ANY LOSS OF DATA THAT MAY RESULT FROM THE DOWNLOAD OF ANY SUCH MATERIAL OR THE USE OF THE LICENSED TECHNOLOGY.
+ 
+10 SUB-CONTRACTORS
+The Licensee shall have the right to subcontract its obligations under this Agreement only upon written approval of Suunto, which shall not be unreasonably withheld. Each Party shall be liable for the work of its sub-contractor as well as its own.
+ 
+11 CONFIDENTIALITY AND FEEDBACK
+11.1 Each party shall keep in confidence all material and information received from the other party  and marked as confidential or which should be understood to be confidential. The party received the confidential information shall have the right to: (a) use such material and information only for the purposes set forth in this Agreement; (b) copy such material and information only to the extent necessary for the purposes of this Agreement; and (c) disclose such material and information only to those of his employees with a need to know such material and information and then only for the purposes set forth in this Agreement. The confidentiality obligation shall, however, not be applied to material and information that: (a) is generally available or otherwise public; (b) Licensee has received from a third party without any obligation of confidentiality; (c) was in the possession of the  the receiving party prior to receipt of the same from the delivering party without any obligation of confidentiality related thereto; (d) the receiving party has developed independently without using material or information received from the delivering party; or (e) the receiving party must disclose pursuant to a law, decree, or other order issued by the competent authorities or judicial order. The receiving party  shall cease using confidential material and information received from the delivering party promptly upon cancellation of the Agreement or when the receiving party no longer needs the material or information in question for the purpose stated in the Agreement and, unless the Parties separately agree on the destruction of such material, return the material in question (including all copies thereof). The receiving party shall, however, be entitled to retain the copies required by law or regulations and the receiving party’s User may retain their own data.
+11.2 The Licensee acknowledges and agrees that all of the Licensed Technology is confidential material of Suunto . By submitting feedback (Feedback) to Suunto , the Licensee acknowledges and agrees that (1) Suunto may have similar development ideas to the Feedback; (2) the Licensee’s Feedback does not contain confidential or proprietary information related to Licensee’s own activities or those of any third party; (3) Suunto is not under any obligation of confidentiality with respect to the Feedback; and (4) the Licensee is not entitled to any compensation of any kind from Suunto . The Licensee hereby grant Suunto a worldwide, non-exclusive, assignable, fully paid, royalty-free, perpetual and irrevocable license to use, exploit, copy, publicly perform, display, distribute, further develop and modify for any purpose such Feedback, and to prepare derivative works thereof, or incorporate such Feedback into other works as well as sublicense products and services resulting from such works.
+11.3 This clause 11 shall survive termination or cancellation of the Agreement.
+ 
+12 INDEMNITY
+The Licensee agrees to defend, indemnify and hold harmless Suunto and its subsidiaries, affiliates, officers, agents, and employees, advertisers, licensors, and partners, from and against any third party claim arising from or in any way related to Licensee’s use of the Licensed Technology, privacy, product liability, breach of this Agreement or any other actions arising out of or relating to the Licensee’s Solutions or otherwise to this Agreement including, without limitation, any liability or expense arising from all claims, losses, actual damages, suits, judgments, litigation costs and attorneys' fees, of every kind and nature.
+ 
+13 FORCE MAJEURE
+Neither party shall be liable to the other for loss, damage, or delay in work caused by an impediment beyond its control which that Party could not have taken into account at the time of the conclusion of the Agreement, and whose consequence it could not have reasonably avoided or overcome including, but not limited to, war, riot, the act or order of any competent civil or military authority, strikes, unauthorized work stoppage or by fire, flood (Force Majeure Event).
+ 
+14 TERM AND TERMINATION OF AGREEMENT
+14.1 This Agreement enters into force after being signed by duly authorized representatives of both Parties and shall remain in force as long as terminated under this Agreement.
+14.2 The Licensee may terminate this Agreement by removing any and all Licensed Technology from the Solution and complying with return and destroy obligations with respect to confidential information as set out in clause 11.
+14.3 If it becomes evident that the fulfillment of this Agreement is likely to be delayed for more than three (3) months due to a Force Majeure Event, either Party shall have the right to terminate this Agreement to the extent it is reasonable by written notice
+to the other Party without either Party having the right to claim damages for such termination.
+14.4 Suunto shall have the right to terminate this Agreement, in whole or in part, upon written notice to the Licensee if the Licensee is declared bankrupt, is put into liquidation, or it otherwise ceases with its payments, or if the Licensee commits a substantial breach of the terms and conditions of this Agreement and does not remedy such breach within twenty (20) days from receipt of the written notice of the breach.
+14.5 Suunto  may further: (a) change, suspend or discontinue all or any aspect of the Licensed Technology or Licensed Technology in general; (b) disable Licensee’s Solution from Suunto’s service at any time; (c) terminate this Agreement for any reason with or without cause.
+ 
+15 DAMAGES, LIMITATION OF LIABILITY
+THE LICENSEE EXPRESSLY UNDERSTANDS AND AGREES THAT SUUNTO SHALL NOT BE LIABLE TO THE LICENSEE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR ANY OTHER DAMAGES, INCLUDING BUT NOT LIMITED TO, DAMAGES FOR LOSS OF PROFITS, GOODWILL, USE, DATA OR OTHER INTANGIBLE LOSSES (EVEN IF SUUNTO HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES), OR RESULTING FROM: (i) THE USE OR THE INABILITY TO USE THE LICENSED TECHNOLOGY; (ii) UNAUTHORIZED ACCESS TO OR ALTERATION OF LICENSEE’S TRANSMISSIONS OR DATA; OR (iii) ANY OTHER MATTER RELATING TO THE LICENSED TECHNOLOGY. NOTHING CONTAINED IN THIS AGREEMENT SHALL PREJUDICE THE STATUTORY RIGHTS OF ANY PARTY DEALING AS A CONSUMER. IN SOME JURSIDICTIONS THE LIABILITY CANNOT BE EXCLUDED BUT MAY BE LIMITED AND IN SUCH CASE THE LIABILITY OF SUUNTO SHALL BE LIMITED TO HUNDRED (100) EUROS.
+ 
+16 ASSIGNMENT
+Neither Party shall have the right to assign this Agreement or the rights or obligations under this Agreement to any third party without the prior written consent of the other Party. Notwithstanding the foregoing, Suunto may assign this Agreement or its rights under it to its Affiliate upon written notice to the Licensee.
+ 
+17 APPLICABLE LAW, DISPUTES AND SETTLEMENT
+17.1 This Agreement shall be governed by and the laws of Finland. The United Nations Convention on Contracts for the International Sale of Goods, done at Vienna April 11, 1980, is excluded.
+17.2 All disputes arising out of or in connection with this Agreement and/or the formation thereof shall be resolved by arbitration under the rules of the Board of Arbitration of the Central Chamber of Commerce of Finland. The arbitration tribunal shall consist of one (1) arbitrator. The Arbitration shall take place in Helsinki, Finland. The arbitration shall be conducted and the arbitration award shall be given in Finnish or, if the Licensee is not a Finnish company, in English.
+ 
+18 OTHER TERMS
+18.1 Suunto service and Licensed Technology may include cryptographic software or similar items that are subject to import or export controls of Finland, U.S. or other applicable countries. The parties agrees to strictly comply with all applicable import and export regulations and to obtain all necessary licenses.
+18.2 A failure of a Party to insist upon the performance of one or more of the terms of this Agreement will not be deemed to be a waiver of its right to enforce such term, or of any rights or remedies that Party may have under this Agreement.
+18.3 This Agreement constitutes the entire Agreement between the Parties with respect to the subject matter hereof and supersedes all prior agreements, proposals, undertakings, and other representations and communications between the Parties.
+18.4 The controlling language of this Agreement and in all future communications shall be English. Notices required under this Agreement shall be delivered by registered mail, fax or email to the addresses specified in this Agreement.
+18.5 Except as expressly provided for, neither Party shall have the right to give undertakings or conclude agreements in the name of or on behalf of the other Party.
+18.6 In the event that any provision of this Agreement is declared invalid or unenforceable, the remaining provisions of this Agreement shall remain in full force and effect. Parties undertake to negotiate in good faith for the replacement of such provision with a valid and enforceable provision.

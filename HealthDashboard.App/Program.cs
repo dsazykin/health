@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 using Avalonia;
 using HealthDashboard.Core;
 using HealthDashboard.Core.HevyApi;
+using HealthDashboard.Core.SuuntoApi;
+using HealthDashboard.Core.Security;
+using HealthDashboard.Core.Models;
 
 namespace HealthDashboard.App
 {
@@ -19,6 +22,12 @@ namespace HealthDashboard.App
             {
                 var apiKey = args.Length > 1 ? args[1] : string.Empty;
                 RunHevySyncConsole(apiKey).GetAwaiter().GetResult();
+                return;
+            }
+
+            if (args.Length > 0 && args[0].Equals("--auth-suunto", StringComparison.OrdinalIgnoreCase))
+            {
+                RunSuuntoAuthConsole().GetAwaiter().GetResult();
                 return;
             }
 
@@ -139,6 +148,150 @@ namespace HealthDashboard.App
             Console.WriteLine("    TEST RUN COMPLETED SUCCESSFULLY!");
             Console.WriteLine("==================================================");
             Console.ResetColor();
+        }
+
+        private static async Task RunSuuntoAuthConsole()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("==================================================");
+            Console.WriteLine("    SUUNTO OAUTH2 HANDSHAKE TEST UTILITY");
+            Console.WriteLine("==================================================");
+            Console.ResetColor();
+
+            using var db = new AppDbContext();
+            DbInitializer.Initialize(db);
+
+            // Fetch current settings
+            var dbClientId = db.Configs.FirstOrDefault(c => c.Key == "SuuntoClientId");
+            var dbClientSecret = db.Configs.FirstOrDefault(c => c.Key == "SuuntoClientSecret");
+            var dbRedirectUri = db.Configs.FirstOrDefault(c => c.Key == "SuuntoRedirectUri");
+
+            var clientId = dbClientId?.Value ?? "YOUR_SUUNTO_CLIENT_ID";
+            var clientSecret = dbClientSecret?.Value ?? "YOUR_SUUNTO_CLIENT_SECRET";
+            var redirectUri = dbRedirectUri?.Value ?? "http://127.0.0.1:5005/callback";
+
+            Console.WriteLine("Current Suunto configuration in Database:");
+            Console.WriteLine($"  Client ID:      {(clientId == "YOUR_SUUNTO_CLIENT_ID" ? "[Not Configured]" : clientId)}");
+            Console.WriteLine($"  Client Secret:  {(clientSecret == "YOUR_SUUNTO_CLIENT_SECRET" ? "[Not Configured]" : "********")}");
+            Console.WriteLine($"  Redirect URI:   {redirectUri}");
+
+            Console.Write("\nWould you like to update these credentials? (y/N): ");
+            var input = Console.ReadLine();
+            if (input != null && input.Trim().Equals("y", StringComparison.OrdinalIgnoreCase))
+            {
+                Console.Write("Enter Suunto Client ID: ");
+                var newId = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(newId)) clientId = newId.Trim();
+
+                Console.Write("Enter Suunto Client Secret: ");
+                var newSecret = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(newSecret)) clientSecret = newSecret.Trim();
+
+                Console.Write("Enter Redirect URI (default http://127.0.0.1:5005/callback): ");
+                var newRedirect = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(newRedirect)) redirectUri = newRedirect.Trim();
+
+                // Save back to db
+                SaveConfigValue(db, "SuuntoClientId", clientId);
+                SaveConfigValue(db, "SuuntoClientSecret", clientSecret);
+                SaveConfigValue(db, "SuuntoRedirectUri", redirectUri);
+                await db.SaveChangesAsync();
+                Console.WriteLine("Credentials saved successfully to database!");
+            }
+
+            if (clientId == "YOUR_SUUNTO_CLIENT_ID" || clientSecret == "YOUR_SUUNTO_CLIENT_SECRET")
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("[Error] Please configure a valid Suunto Client ID and Client Secret before proceeding.");
+                Console.ResetColor();
+                return;
+            }
+
+            Console.WriteLine("\n[1/3] Initiating OAuth2 Handshake...");
+            var oauthService = new SuuntoOAuthService();
+
+            try
+            {
+                Console.WriteLine("      Opening your browser to complete authorization.");
+                Console.WriteLine("      Listening locally for the callback. Timeout is 120 seconds...");
+                
+                var success = await oauthService.StartAuthHandshakeAsync(120);
+
+                if (success)
+                {
+                    Console.ForegroundColor = ConsoleColor.Green;
+                    Console.WriteLine("\n[2/3] OAuth2 Handshake completed successfully!");
+                    Console.ResetColor();
+
+                    Console.WriteLine("\n[3/3] Printing credential status from Database:");
+                    var freshDb = new AppDbContext();
+                    var secureStorage = new SecureStorage();
+
+                    var encAccessToken = freshDb.Configs.FirstOrDefault(c => c.Key == "SuuntoAccessToken")?.Value;
+                    var encRefreshToken = freshDb.Configs.FirstOrDefault(c => c.Key == "SuuntoRefreshToken")?.Value;
+                    var encExpiresAt = freshDb.Configs.FirstOrDefault(c => c.Key == "SuuntoTokenExpiresAt")?.Value;
+
+                    if (!string.IsNullOrEmpty(encAccessToken) && !string.IsNullOrEmpty(encRefreshToken) && !string.IsNullOrEmpty(encExpiresAt))
+                    {
+                        var decAccessToken = secureStorage.Decrypt(encAccessToken);
+                        var decRefreshToken = secureStorage.Decrypt(encRefreshToken);
+                        var decExpiresAt = secureStorage.Decrypt(encExpiresAt);
+
+                        Console.WriteLine($"  - Encrypted Access Token:  {encAccessToken.Substring(0, Math.Min(15, encAccessToken.Length))}...");
+                        Console.WriteLine($"  - Decrypted Access Token:  {decAccessToken.Substring(0, Math.Min(6, decAccessToken.Length))}... [VALID]");
+                        Console.WriteLine($"  - Encrypted Refresh Token: {encRefreshToken.Substring(0, Math.Min(15, encRefreshToken.Length))}...");
+                        Console.WriteLine($"  - Decrypted Refresh Token: {decRefreshToken.Substring(0, Math.Min(6, decRefreshToken.Length))}... [VALID]");
+                        Console.WriteLine($"  - Token Expiration:        {decExpiresAt} (UTC)");
+
+                        if (DateTime.TryParse(decExpiresAt, out var expiresAt))
+                        {
+                            var timeRemaining = expiresAt - DateTime.UtcNow;
+                            Console.WriteLine($"  - Expires In:              {timeRemaining.TotalHours:F2} hours");
+                        }
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        Console.WriteLine("      [Error] Tokens could not be retrieved from the database configs.");
+                        Console.ResetColor();
+                    }
+                }
+                else
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\n[Error] Handshake failed or was not completed.");
+                    Console.ResetColor();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"\n[Error] Exception occurred: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                Console.ResetColor();
+            }
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\n==================================================");
+            Console.WriteLine("    TEST RUN COMPLETED!");
+            Console.WriteLine("==================================================");
+            Console.ResetColor();
+        }
+
+        private static void SaveConfigValue(AppDbContext db, string key, string value)
+        {
+            var config = db.Configs.FirstOrDefault(c => c.Key == key);
+            if (config != null)
+            {
+                config.Value = value;
+            }
+            else
+            {
+                db.Configs.Add(new Core.Models.Config { Key = key, Value = value });
+            }
         }
     }
 }

@@ -12,6 +12,28 @@ namespace HealthDashboard.Core
             // Ensure the SQLite database file and schema is created
             context.Database.EnsureCreated();
 
+            // Seed default Suunto config keys if they do not exist
+            var changed = false;
+            if (!context.Configs.Any(c => c.Key == "SuuntoClientId"))
+            {
+                context.Configs.Add(new Config { Key = "SuuntoClientId", Value = "YOUR_SUUNTO_CLIENT_ID" });
+                changed = true;
+            }
+            if (!context.Configs.Any(c => c.Key == "SuuntoClientSecret"))
+            {
+                context.Configs.Add(new Config { Key = "SuuntoClientSecret", Value = "YOUR_SUUNTO_CLIENT_SECRET" });
+                changed = true;
+            }
+            if (!context.Configs.Any(c => c.Key == "SuuntoRedirectUri"))
+            {
+                context.Configs.Add(new Config { Key = "SuuntoRedirectUri", Value = "http://127.0.0.1:5005/callback" });
+                changed = true;
+            }
+            if (changed)
+            {
+                context.SaveChanges();
+            }
+
             // Seed default exercises if none exist
             if (!context.Exercises.Any())
             {
