@@ -29,6 +29,11 @@ namespace HealthDashboard.Core
                 context.Configs.Add(new Config { Key = "SuuntoRedirectUri", Value = "http://127.0.0.1:5005/callback" });
                 changed = true;
             }
+            if (!context.Configs.Any(c => c.Key == "SuuntoSubscriptionKey"))
+            {
+                context.Configs.Add(new Config { Key = "SuuntoSubscriptionKey", Value = "YOUR_SUUNTO_SUBSCRIPTION_KEY" });
+                changed = true;
+            }
             if (changed)
             {
                 context.SaveChanges();

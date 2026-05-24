@@ -31,6 +31,12 @@ namespace HealthDashboard.App
                 return;
             }
 
+            if (args.Length > 0 && args[0].Equals("--sync-suunto", StringComparison.OrdinalIgnoreCase))
+            {
+                RunSuuntoSyncConsole().GetAwaiter().GetResult();
+                return;
+            }
+
             BuildAvaloniaApp()
                 .StartWithClassicDesktopLifetime(args);
         }
@@ -277,6 +283,97 @@ namespace HealthDashboard.App
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("\n==================================================");
             Console.WriteLine("    TEST RUN COMPLETED!");
+            Console.WriteLine("==================================================");
+            Console.ResetColor();
+        }
+
+        private static async Task RunSuuntoSyncConsole()
+        {
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("==================================================");
+            Console.WriteLine("    SUUNTO API LIVE INGESTION & STITCHING");
+            Console.WriteLine("==================================================");
+            Console.ResetColor();
+
+            Console.WriteLine("\n[1/3] Connecting to SQLite Database...");
+            using var db = new AppDbContext();
+            
+            // Ensure DB schema exists and seeds standard data
+            DbInitializer.Initialize(db);
+            Console.WriteLine("      SQLite database connected and initialized.");
+
+            // Secure storage and config decryption
+            var secureStorage = new SecureStorage();
+            var subscriptionKeyConfig = db.Configs.FirstOrDefault(c => c.Key == "SuuntoSubscriptionKey");
+            var subscriptionKey = subscriptionKeyConfig?.Value ?? "YOUR_SUUNTO_SUBSCRIPTION_KEY";
+
+            if (subscriptionKey == "YOUR_SUUNTO_SUBSCRIPTION_KEY")
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.Write("Enter your Suunto API Subscription Key (Ocp-Apim-Subscription-Key): ");
+                var inputKey = Console.ReadLine();
+                if (!string.IsNullOrWhiteSpace(inputKey))
+                {
+                    subscriptionKey = inputKey.Trim();
+                    // Encrypt it and save it back
+                    var encryptedKey = secureStorage.Encrypt(subscriptionKey);
+                    if (subscriptionKeyConfig != null)
+                    {
+                        subscriptionKeyConfig.Value = encryptedKey;
+                    }
+                    else
+                    {
+                        db.Configs.Add(new Core.Models.Config { Key = "SuuntoSubscriptionKey", Value = encryptedKey });
+                    }
+                    await db.SaveChangesAsync();
+                    Console.WriteLine("      Subscription Key securely saved to database.");
+                }
+            }
+
+            Console.WriteLine("\n[2/3] Performing Synchronization and Ingesting Telemetry...");
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("      Syncing activities and daily wellness metrics. Please wait...");
+            Console.ResetColor();
+
+            var syncService = new SuuntoIngestionService(null, null, secureStorage);
+            try
+            {
+                var result = await syncService.SyncAsync(db);
+
+                if (result.HasErrors)
+                {
+                    Console.ForegroundColor = ConsoleColor.Red;
+                    Console.WriteLine("\n      [Errors Encountered during Ingestion]:");
+                    foreach (var err in result.Errors)
+                    {
+                        Console.WriteLine($"      - {err}");
+                    }
+                    Console.ResetColor();
+                }
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("\n==================================================");
+                Console.WriteLine("    SYNC SUMMARY RESULTS");
+                Console.WriteLine("==================================================");
+                Console.WriteLine($"  - Suunto Activities fetched:      {result.ActivitiesFetched}");
+                Console.WriteLine($"  - Workouts successfully stitched:  {result.WorkoutsStitched}");
+                Console.WriteLine($"  - Daily wellness metrics updated: {result.WellnessDaysUpdated}");
+                Console.ResetColor();
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"\n[Error] Sync execution failed: {ex.Message}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner Exception: {ex.InnerException.Message}");
+                }
+                Console.ResetColor();
+            }
+
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.WriteLine("\n==================================================");
+            Console.WriteLine("    TEST RUN COMPLETED SUCCESSFULLY!");
             Console.WriteLine("==================================================");
             Console.ResetColor();
         }

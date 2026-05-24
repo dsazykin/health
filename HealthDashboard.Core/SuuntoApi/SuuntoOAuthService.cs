@@ -160,7 +160,7 @@ namespace HealthDashboard.Core.SuuntoApi
         /// <summary>
         /// Retrieves a valid access token. Automatically refreshes it if it has expired or is about to expire.
         /// </summary>
-        public async Task<string?> GetValidAccessTokenAsync()
+        public virtual async Task<string?> GetValidAccessTokenAsync()
         {
             using var db = new AppDbContext();
 
