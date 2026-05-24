@@ -39,6 +39,27 @@ public partial class MainWindowViewModel : ViewModelBase
         set => SetProperty(ref _latestTdeeCalculated, value);
     }
 
+    private int? _latestCalorieTarget;
+    public int? LatestCalorieTarget
+    {
+        get => _latestCalorieTarget;
+        set => SetProperty(ref _latestCalorieTarget, value);
+    }
+
+    private double _goalWeightKg;
+    public double GoalWeightKg
+    {
+        get => _goalWeightKg;
+        set => SetProperty(ref _goalWeightKg, value);
+    }
+
+    private double _targetRateOfChange;
+    public double TargetRateOfChange
+    {
+        get => _targetRateOfChange;
+        set => SetProperty(ref _targetRateOfChange, value);
+    }
+
     public ICommand ImportHevyCsvCommand { get; }
     public ICommand ImportCronoCsvCommand { get; }
 
@@ -63,6 +84,7 @@ public partial class MainWindowViewModel : ViewModelBase
                 if (latestMetric != null)
                 {
                     LatestTdeeCalculated = latestMetric.TdeeCalculated;
+                    LatestCalorieTarget = latestMetric.CalorieTarget;
                 }
                 else
                 {
@@ -73,12 +95,37 @@ public partial class MainWindowViewModel : ViewModelBase
                         defaultTdee = parsedTdee;
                     }
                     LatestTdeeCalculated = defaultTdee;
+                    LatestCalorieTarget = null;
+                }
+
+                // Load Configs for GoalWeightKg and TargetRateOfChange
+                var goalWeightConfig = await db.Configs.FirstOrDefaultAsync(c => c.Key == "GoalWeightKg");
+                if (goalWeightConfig != null && double.TryParse(goalWeightConfig.Value, System.Globalization.CultureInfo.InvariantCulture, out double gw))
+                {
+                    GoalWeightKg = gw;
+                }
+                else
+                {
+                    GoalWeightKg = 0.0;
+                }
+
+                var targetRateConfig = await db.Configs.FirstOrDefaultAsync(c => c.Key == "TargetRateOfChange");
+                if (targetRateConfig != null && double.TryParse(targetRateConfig.Value, System.Globalization.CultureInfo.InvariantCulture, out double trc))
+                {
+                    TargetRateOfChange = trc;
+                }
+                else
+                {
+                    TargetRateOfChange = 0.0;
                 }
             }
         }
         catch
         {
             LatestTdeeCalculated = 2000;
+            LatestCalorieTarget = null;
+            GoalWeightKg = 0.0;
+            TargetRateOfChange = 0.0;
         }
     }
 

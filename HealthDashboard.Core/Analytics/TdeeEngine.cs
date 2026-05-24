@@ -20,6 +20,7 @@ public class TdeeResult
     public string Date { get; set; } = string.Empty;
     public double? SmoothedWeight { get; set; }
     public int Tdee { get; set; }
+    public int? CalorieTarget { get; set; }
 }
 
 public class TdeeEngine
@@ -29,7 +30,12 @@ public class TdeeEngine
     /// Gaps in dates are handled gracefully by filling them in with carry-forward smoothed weight
     /// and 0 calorie intake before calculating windows.
     /// </summary>
-    public static List<TdeeResult> CalculateTdeeSeries(List<DailyMetricDto> metrics, double alpha = 0.1, int defaultTdee = 2000)
+    public static List<TdeeResult> CalculateTdeeSeries(
+        List<DailyMetricDto> metrics,
+        double alpha = 0.1,
+        int defaultTdee = 2000,
+        double targetRateOfChange = 0.0,
+        double goalWeightKg = 0.0)
     {
         if (metrics == null || metrics.Count == 0)
         {
@@ -186,10 +192,52 @@ public class TdeeEngine
             });
         }
 
-        // 5. Map the contiguous results back to a dictionary for rapid lookup by date
+        // 5. Calculate CalorieTarget for each contiguous day
+        int? currentCalorieTarget = null;
+        for (int i = 0; i < tdeeResultsContiguous.Count; i++)
+        {
+            var dayResult = tdeeResultsContiguous[i];
+            
+            // Weekly check-in calibration: every 7 days (index 0, 7, 14, 21, etc.)
+            if (i % 7 == 0)
+            {
+                double rateOfChangeToUse = targetRateOfChange;
+                if (goalWeightKg > 0 && dayResult.SmoothedWeight.HasValue)
+                {
+                    double currentWeight = dayResult.SmoothedWeight.Value;
+                    if (targetRateOfChange < 0 && currentWeight <= goalWeightKg)
+                    {
+                        rateOfChangeToUse = 0.0;
+                    }
+                    else if (targetRateOfChange > 0 && currentWeight >= goalWeightKg)
+                    {
+                        rateOfChangeToUse = 0.0;
+                    }
+                }
+
+                double rawCalorieTarget = dayResult.Tdee + ((rateOfChangeToUse * 7700.0) / 7.0);
+                int rawTargetInt = (int)Math.Round(rawCalorieTarget, MidpointRounding.AwayFromZero);
+
+                if (!currentCalorieTarget.HasValue)
+                {
+                    currentCalorieTarget = Math.Clamp(rawTargetInt, 1000, 5000);
+                }
+                else
+                {
+                    // Shift target gradually: clamp the change to a maximum of 100 kcal
+                    int previousTarget = currentCalorieTarget.Value;
+                    int calibratedTarget = Math.Clamp(rawTargetInt, previousTarget - 100, previousTarget + 100);
+                    currentCalorieTarget = Math.Clamp(calibratedTarget, 1000, 5000);
+                }
+            }
+            
+            dayResult.CalorieTarget = currentCalorieTarget;
+        }
+
+        // 6. Map the contiguous results back to a dictionary for rapid lookup by date
         var resultsMap = tdeeResultsContiguous.ToDictionary(r => r.Date, r => r);
 
-        // 6. Return results matching the original input list in their original order
+        // 7. Return results matching the original input list in their original order
         var finalResults = new List<TdeeResult>();
         foreach (var originalMetric in metrics)
         {
@@ -204,7 +252,8 @@ public class TdeeEngine
                 {
                     Date = originalMetric.Date,
                     SmoothedWeight = null,
-                    Tdee = defaultTdee
+                    Tdee = defaultTdee,
+                    CalorieTarget = null
                 });
             }
         }
@@ -240,6 +289,20 @@ public class TdeeEngine
             defaultTdee = parsedTdee;
         }
 
+        var targetRateOfChangeConfig = await db.Configs.FirstOrDefaultAsync(c => c.Key == "TargetRateOfChange");
+        double targetRateOfChange = 0.0;
+        if (targetRateOfChangeConfig != null && double.TryParse(targetRateOfChangeConfig.Value, CultureInfo.InvariantCulture, out double parsedRate))
+        {
+            targetRateOfChange = parsedRate;
+        }
+
+        var goalWeightKgConfig = await db.Configs.FirstOrDefaultAsync(c => c.Key == "GoalWeightKg");
+        double goalWeightKg = 0.0;
+        if (goalWeightKgConfig != null && double.TryParse(goalWeightKgConfig.Value, CultureInfo.InvariantCulture, out double parsedGoalWeight))
+        {
+            goalWeightKg = parsedGoalWeight;
+        }
+
         // Map to DTOs
         var dtos = allMetrics.Select(m => new DailyMetricDto
         {
@@ -248,11 +311,11 @@ public class TdeeEngine
             CronoCalsIn = m.CronoCalsIn
         }).ToList();
 
-        // Calculate TDEE
-        var results = CalculateTdeeSeries(dtos, alpha, defaultTdee);
+        // Calculate TDEE and calorie targets
+        var results = CalculateTdeeSeries(dtos, alpha, defaultTdee, targetRateOfChange, goalWeightKg);
 
         // Map back and update
-        var resultsMap = results.ToDictionary(r => r.Date, r => r.Tdee);
+        var resultsMap = results.ToDictionary(r => r.Date, r => r);
 
         // Inside transaction, update all matching daily metrics
         await using var transaction = await db.Database.BeginTransactionAsync();
@@ -260,9 +323,10 @@ public class TdeeEngine
         {
             foreach (var metric in allMetrics)
             {
-                if (resultsMap.TryGetValue(metric.Date, out var computedTdee))
+                if (resultsMap.TryGetValue(metric.Date, out var result))
                 {
-                    metric.TdeeCalculated = computedTdee;
+                    metric.TdeeCalculated = result.Tdee;
+                    metric.CalorieTarget = result.CalorieTarget;
                 }
             }
             await db.SaveChangesAsync();

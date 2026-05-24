@@ -34,6 +34,16 @@ namespace HealthDashboard.Core
                 context.Configs.Add(new Config { Key = "SuuntoSubscriptionKey", Value = "YOUR_SUUNTO_SUBSCRIPTION_KEY" });
                 changed = true;
             }
+            if (!context.Configs.Any(c => c.Key == "TargetRateOfChange"))
+            {
+                context.Configs.Add(new Config { Key = "TargetRateOfChange", Value = "0.0" });
+                changed = true;
+            }
+            if (!context.Configs.Any(c => c.Key == "GoalWeightKg"))
+            {
+                context.Configs.Add(new Config { Key = "GoalWeightKg", Value = "0.0" });
+                changed = true;
+            }
             if (changed)
             {
                 context.SaveChanges();

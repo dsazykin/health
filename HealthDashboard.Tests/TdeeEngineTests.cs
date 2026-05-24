@@ -314,4 +314,157 @@ public class TdeeEngineTests : IDisposable
         // The 15th day (index 14) has a valid 14-day history, so it should calculate 2500
         Assert.Equal(2500, updatedMetrics[14].TdeeCalculated);
     }
+
+    [Fact]
+    public void TestCalorieTargetCalculation()
+    {
+        // Arrange
+        var metrics = new List<DailyMetricDto>
+        {
+            new() { Date = "2026-05-01", WeightKg = 80.0, CronoCalsIn = 2000 }
+        };
+
+        // Act
+        var results = TdeeEngine.CalculateTdeeSeries(metrics, alpha: 0.1, defaultTdee: 2000, targetRateOfChange: 0.5, goalWeightKg: 0.0);
+
+        // Assert
+        Assert.Single(results);
+        // Raw target: 2000 + ((0.5 * 7700) / 7) = 2000 + 550 = 2550
+        Assert.Equal(2550, results[0].CalorieTarget);
+    }
+
+    [Fact]
+    public void TestGoalWeightMet_StopsDeficitOrSurplus()
+    {
+        // Arrange: Goal weight 75.0, current weight 74.0, target change -0.5 (cut, but goal met!)
+        var metricsCut = new List<DailyMetricDto>
+        {
+            new() { Date = "2026-05-01", WeightKg = 74.0, CronoCalsIn = 2000 }
+        };
+
+        // Act
+        var resultsCut = TdeeEngine.CalculateTdeeSeries(metricsCut, alpha: 0.1, defaultTdee: 2000, targetRateOfChange: -0.5, goalWeightKg: 75.0);
+
+        // Assert: Goal met, target rate of change should be 0.0, CalorieTarget = Tdee
+        Assert.Equal(2000, resultsCut[0].CalorieTarget);
+
+        // Arrange: Goal weight 85.0, current weight 86.0, target change +0.5 (bulk, but goal met!)
+        var metricsBulk = new List<DailyMetricDto>
+        {
+            new() { Date = "2026-05-01", WeightKg = 86.0, CronoCalsIn = 2000 }
+        };
+
+        // Act
+        var resultsBulk = TdeeEngine.CalculateTdeeSeries(metricsBulk, alpha: 0.1, defaultTdee: 2000, targetRateOfChange: 0.5, goalWeightKg: 85.0);
+
+        // Assert: Goal met, target rate of change should be 0.0, CalorieTarget = Tdee
+        Assert.Equal(2000, resultsBulk[0].CalorieTarget);
+    }
+
+    [Fact]
+    public void TestWeeklyCheckInCalibrationAndSmoothing()
+    {
+        // Arrange
+        var metricsTdeeChange = new List<DailyMetricDto>();
+        var baseDate = new DateOnly(2026, 5, 1);
+        for (int i = 0; i < 15; i++)
+        {
+            double weight = 80.0;
+            if (i == 14) weight = 70.0; // Sudden weight loss to spike calculated TDEE
+
+            metricsTdeeChange.Add(new DailyMetricDto
+            {
+                Date = baseDate.AddDays(i).ToString("yyyy-MM-dd"),
+                WeightKg = weight,
+                CronoCalsIn = 3000
+            });
+        }
+
+        // Act
+        var results = TdeeEngine.CalculateTdeeSeries(metricsTdeeChange, alpha: 0.1, defaultTdee: 2000, targetRateOfChange: 0.5, goalWeightKg: 0.0);
+
+        // Assert
+        // Day 0: check-in. TDEE = 2000. CalorieTarget = 2000 + 550 = 2550.
+        Assert.Equal(2550, results[0].CalorieTarget);
+
+        // Day 1 to 6: carried forward
+        for (int i = 1; i <= 6; i++)
+        {
+            Assert.Equal(2550, results[i].CalorieTarget);
+        }
+
+        // Day 7: check-in. TDEE is still default 2000 (since i < 14). CalorieTarget = 2550.
+        Assert.Equal(2550, results[7].CalorieTarget);
+
+        // Day 8 to 13: carried forward
+        for (int i = 8; i <= 13; i++)
+        {
+            Assert.Equal(2550, results[i].CalorieTarget);
+        }
+
+        // Day 14: check-in day!
+        // Calculated TDEE will be significantly higher than 2000.
+        // Raw target: Tdee + 550. This raw target will be > 2650.
+        // Let's check that the actual CalorieTarget on Day 14 is exactly 2650 (2550 + 100) because it got clamped to shift gradually!
+        Assert.True(results[14].Tdee > 2000);
+        Assert.Equal(2650, results[14].CalorieTarget);
+    }
+
+    [Fact]
+    public async Task TestDatabasePersistenceOfCalorieTarget()
+    {
+        // Arrange
+        using var db = new AppDbContext(_options);
+        DbInitializer.Initialize(db);
+
+        // Seed some configs
+        var alpha = await db.Configs.FirstOrDefaultAsync(c => c.Key == "TdeeWeightEmaAlpha");
+        if (alpha == null) db.Configs.Add(new Config { Key = "TdeeWeightEmaAlpha", Value = "0.1" });
+        else alpha.Value = "0.1";
+
+        var defTdee = await db.Configs.FirstOrDefaultAsync(c => c.Key == "DefaultTdee");
+        if (defTdee == null) db.Configs.Add(new Config { Key = "DefaultTdee", Value = "2000" });
+        else defTdee.Value = "2000";
+
+        var rate = await db.Configs.FirstOrDefaultAsync(c => c.Key == "TargetRateOfChange");
+        if (rate == null) db.Configs.Add(new Config { Key = "TargetRateOfChange", Value = "0.5" });
+        else rate.Value = "0.5";
+
+        var goal = await db.Configs.FirstOrDefaultAsync(c => c.Key == "GoalWeightKg");
+        if (goal == null) db.Configs.Add(new Config { Key = "GoalWeightKg", Value = "70.0" });
+        else goal.Value = "70.0";
+
+        // Seed 15 consecutive DailyMetrics
+        var baseDate = new DateOnly(2026, 5, 1);
+        for (int i = 0; i < 15; i++)
+        {
+            var dateStr = baseDate.AddDays(i).ToString("yyyy-MM-dd");
+            db.DailyMetrics.Add(new DailyMetric
+            {
+                Date = dateStr,
+                WeightKg = 80.0,
+                CronoCalsIn = 2000,
+                TdeeCalculated = 0,
+                CalorieTarget = null
+            });
+        }
+        await db.SaveChangesAsync();
+
+        // Act
+        var engine = new TdeeEngine();
+        await engine.UpdateTdeeHistoryAsync(db);
+
+        // Assert
+        var updatedMetrics = await db.DailyMetrics.OrderBy(m => m.Date).ToListAsync();
+        Assert.Equal(15, updatedMetrics.Count);
+        
+        // Target rate of change is +0.5. Goal is 70.0. Current weight is 80.0.
+        // Since we are bulking (+0.5) and current weight (80) is already above goal weight (70),
+        // we have reached the goal weight for a bulk!
+        // Therefore, target rate of change to use should be 0.0 (maintenance), so CalorieTarget = Tdee = 2000.
+        for (int i = 0; i < 15; i++)
+        {
+            Assert.Equal(2000, updatedMetrics[i].CalorieTarget);
+        }
+    }
 }

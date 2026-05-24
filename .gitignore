@@ -2,9 +2,8 @@
 .antigravitycli/*
 GEMINI.md
 DEVELOPER.md
-Suunto Application.txt\
-Suunto Terms.txt
-Suunto_API_Compliance_Review.md
+# Suunto Integration Files
+/[Ss]uunto*
 
 # Core .NET / C# Build Outputs
 [Bb]in/
