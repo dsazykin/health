@@ -1,206 +1,322 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:HealthDashboard.App.ViewModels"
+        xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="500"
+        mc:Ignorable="d" d:DesignWidth="1200" d:DesignHeight="800"
         x:Class="HealthDashboard.App.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="Health Tracker &amp; Workout Dashboard"
-        Width="800"
-        Height="500"
+        Width="1200" Height="800"
         WindowStartupLocation="CenterScreen"
-        Background="#11111B">
+        Background="Transparent"
+        TransparencyLevelHint="Transparent, AcrylicBlur, None"
+        ExtendClientAreaToDecorationsHint="True"
+        ExtendClientAreaTitleBarHeightHint="-1"
+        FontFamily="avares://Avalonia.Fonts.Inter/Assets/Fonts#Inter, $Default, SansSerif">
 
     <Design.DataContext>
         <vm:MainWindowViewModel/>
     </Design.DataContext>
 
-    <Grid>
-        <!-- Background Gradient -->
-        <Border>
-            <Border.Background>
-                <LinearGradientBrush StartPoint="0%,0%" EndPoint="100%,100%">
-                    <GradientStop Color="#0F0C20" Offset="0.0"/>
-                    <GradientStop Color="#15102A" Offset="0.5"/>
-                    <GradientStop Color="#1E1E2E" Offset="1.0"/>
-                </LinearGradientBrush>
-            </Border.Background>
-        </Border>
+    <Panel>
+        <!-- Layer 1: OS-Level Acrylic Blur (Windows/macOS native hardware fallback) -->
+        <ExperimentalAcrylicBorder IsHitTestVisible="False">
+            <ExperimentalAcrylicBorder.Material>
+                <ExperimentalAcrylicMaterial
+                    BackgroundSource="Digger"
+                    TintColor="#11111B"
+                    TintOpacity="0.85"
+                    MaterialOpacity="0.65" />
+            </ExperimentalAcrylicBorder.Material>
+        </ExperimentalAcrylicBorder>
 
-        <!-- Main Content Area -->
-        <Grid RowDefinitions="Auto,*,Auto" Margin="30">
-            <!-- Header -->
-            <StackPanel Grid.Row="0" Spacing="8" Margin="0,0,0,20">
-                <TextBlock Text="HEALTH &amp; WORKOUTS DASHBOARD" 
-                           FontSize="28" 
-                           FontWeight="Black" 
-                           Foreground="#F5C2E7"
-                           LetterSpacing="2"/>
-                <TextBlock Text="Manage your workouts, metrics, and athletic progression in one modern interface." 
-                           FontSize="14" 
-                           Foreground="#A6ADC8"/>
-                <Border Height="2" Background="#45475A" HorizontalAlignment="Stretch" Margin="0,10,0,0"/>
-            </StackPanel>
+        <!-- Layer 2: Cross-Platform Solid Semi-Transparent Fallback Overlay -->
+        <Border Name="WindowBackgroundOverlay"
+                Background="#E611111B"
+                CornerRadius="12"
+                BorderBrush="#25FFFFFF"
+                BorderThickness="1.5">
 
-            <!-- Main Feature Card -->
-            <Grid Grid.Row="1" ColumnDefinitions="*,*" Margin="0,20">
-                <!-- Left panel: Welcome / Greeting -->
-                <StackPanel Grid.Column="0" Spacing="15" VerticalAlignment="Center" Margin="0,0,20,0">
-                    <TextBlock Text="{Binding Greeting}" 
-                               FontSize="22" 
-                               FontWeight="Bold" 
-                               Foreground="#FFFFFF" 
-                               TextWrapping="Wrap"/>
-
-                    <!-- Latest Calculated TDEE Display Card -->
-                    <Border Background="#1E1E2E"
-                            BorderBrush="#A6E3A1"
-                            BorderThickness="1"
-                            CornerRadius="12"
-                            Padding="15"
-                            HorizontalAlignment="Stretch">
-                        <StackPanel Spacing="3">
-                            <TextBlock Text="CURRENT COMPUTED TDEE" 
-                                       FontSize="11" 
-                                       FontWeight="Bold" 
-                                       Foreground="#A6E3A1" 
-                                       LetterSpacing="1"/>
-                            <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,5,0,0">
-                                <TextBlock Text="{Binding LatestTdeeCalculated}" 
-                                           FontSize="32" 
-                                           FontWeight="Black" 
-                                           Foreground="#FFFFFF"/>
-                                <TextBlock Text="kcal/day" 
-                                           FontSize="14" 
-                                           Foreground="#A6ADC8" 
-                                           VerticalAlignment="Bottom"
-                                           Margin="0,0,0,4"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <!-- Daily Caloric Target Card -->
-                    <Border Background="#1E1E2E"
-                            BorderBrush="#89B4FA"
-                            BorderThickness="1"
-                            CornerRadius="12"
-                            Padding="15"
-                            HorizontalAlignment="Stretch">
-                        <StackPanel Spacing="3">
-                            <TextBlock Text="RECOMMENDED DAILY CALORIES" 
-                                       FontSize="11" 
-                                       FontWeight="Bold" 
-                                       Foreground="#89B4FA" 
-                                       LetterSpacing="1"/>
-                            <StackPanel Orientation="Horizontal" Spacing="5" Margin="0,5,0,0">
-                                <TextBlock Text="{Binding LatestCalorieTarget, FallbackValue='N/A'}" 
-                                           FontSize="32" 
-                                           FontWeight="Black" 
-                                           Foreground="#FFFFFF"/>
-                                <TextBlock Text="kcal/day" 
-                                           FontSize="14" 
-                                           Foreground="#A6ADC8" 
-                                           VerticalAlignment="Bottom"
-                                           Margin="0,0,0,4"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" Spacing="10" Margin="0,5,0,0">
-                                <TextBlock Text="{Binding TargetRateOfChange, StringFormat='Rate: {0} kg/wk'}"
-                                           FontSize="12"
-                                           Foreground="#CDD6F4"/>
-                                <TextBlock Text="|"
-                                           FontSize="12"
-                                           Foreground="#585B70"/>
-                                <TextBlock Text="{Binding GoalWeightKg, StringFormat='Goal: {0} kg'}"
-                                           FontSize="12"
-                                           Foreground="#CDD6F4"/>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-
-                    <TextBlock Text="Ready to analyze your training? Import your workout history from Hevy and your daily summaries from Cronometer to calculate TDEE, track muscle groups, analyze set volumes, and synchronize heart rate metrics." 
-                               FontSize="13" 
-                               Foreground="#CDD6F4" 
-                               LineHeight="20"
-                               TextWrapping="Wrap"/>
-                </StackPanel>
-
-                <!-- Right panel: CSV Import Action Card -->
-                <Border Grid.Column="1" 
-                        Background="#1E1E2E" 
-                        BorderBrush="#F5C2E7" 
-                        BorderThickness="1" 
-                        CornerRadius="16" 
-                        Padding="25"
-                        VerticalAlignment="Center">
-                    <StackPanel Spacing="15" HorizontalAlignment="Center">
-                        <TextBlock Text="Ingest Daily Summaries &amp; Workouts" 
-                                   FontSize="18" 
-                                   FontWeight="Bold" 
+            <Grid RowDefinitions="Auto,*">
+                <!-- Custom Window Title Area -->
+                <Grid Grid.Row="0" Height="50" ColumnDefinitions="*,Auto" Margin="25,10,25,0">
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+                        <TextBlock Text="⚡" FontSize="20" VerticalAlignment="Center"/>
+                        <TextBlock Text="ATHLETIC HEALTH &amp; WORKOUT DASHBOARD" 
+                                   FontSize="16" 
+                                   FontWeight="Black" 
                                    Foreground="#F5C2E7"
-                                   HorizontalAlignment="Center"/>
-                        
-                        <TextBlock Text="Import a Hevy CSV export to integrate workout details, or a Cronometer daily summaries CSV to integrate daily nutrition &amp; weight logs." 
-                                   FontSize="12" 
-                                   Foreground="#A6ADC8" 
-                                   TextAlignment="Center" 
-                                   TextWrapping="Wrap"/>
-
-                        <StackPanel Spacing="10">
-                            <Button Command="{Binding ImportHevyCsvCommand}"
-                                    Background="#F5C2E7"
-                                    Foreground="#11111B"
-                                    FontWeight="Bold"
-                                    FontSize="13"
-                                    Padding="20,10"
-                                    CornerRadius="8"
-                                    HorizontalAlignment="Stretch">
-                                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-                                    <TextBlock Text="🏋️" FontSize="16" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Import Hevy CSV" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
-
-                            <Button Command="{Binding ImportCronoCsvCommand}"
-                                    Background="#89B4FA"
-                                    Foreground="#11111B"
-                                    FontWeight="Bold"
-                                    FontSize="13"
-                                    Padding="20,10"
-                                    CornerRadius="8"
-                                    HorizontalAlignment="Stretch">
-                                <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Center">
-                                    <TextBlock Text="🍎" FontSize="16" VerticalAlignment="Center"/>
-                                    <TextBlock Text="Import Cronometer CSV" VerticalAlignment="Center"/>
-                                </StackPanel>
-                            </Button>
+                                   LetterSpacing="1.5"
+                                   VerticalAlignment="Center"/>
+                    </StackPanel>
+                    
+                    <Border Grid.Column="1" Background="#1E1E2E" CornerRadius="8" Padding="10,4" BorderThickness="1" BorderBrush="#313244">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                            <Ellipse Width="8" Height="8" Fill="#A6E3A1"/>
+                            <TextBlock Text="{Binding StatusText}" FontSize="11" Foreground="#CDD6F4"/>
                         </StackPanel>
-                    </StackPanel>
-                </Border>
-            </Grid>
-
-            <!-- Footer: Status Bar -->
-            <Border Grid.Row="2" 
-                    Background="#1E1E2E" 
-                    BorderBrush="#313244" 
-                    BorderThickness="1" 
-                    CornerRadius="8" 
-                    Padding="12,10">
-                <Grid ColumnDefinitions="Auto,*">
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                        <Ellipse Width="8" Height="8" Fill="#A6E3A1"/>
-                        <TextBlock Text="System Status:" FontSize="12" FontWeight="Bold" Foreground="#89B4FA" VerticalAlignment="Center"/>
-                    </StackPanel>
-                    <TextBlock Grid.Column="1" 
-                               Text="{Binding StatusText}" 
-                               FontSize="12" 
-                               Foreground="#CDD6F4" 
-                               Margin="8,0,0,0" 
-                               TextWrapping="Wrap"
-                               VerticalAlignment="Center"/>
+                    </Border>
                 </Grid>
-            </Border>
-        </Grid>
-    </Grid>
+
+                <!-- Main Content Area: 4-Tab Control Layout -->
+                <TabControl Grid.Row="1" Margin="25,10,25,25">
+                    
+                    <!-- TAB 1: DASHBOARD HUB -->
+                    <TabItem Header="Dashboard Hub" FontSize="14" FontWeight="Bold" Height="40">
+                        <Grid ColumnDefinitions="*,1.2*" Margin="0,15,0,0" RowDefinitions="*">
+                            
+                            <!-- Left Column: Readiness Indicators -->
+                            <ScrollViewer Grid.Column="0" Margin="0,0,15,0">
+                                <StackPanel Spacing="20">
+                                    <!-- Readiness Progress Gauge Card -->
+                                    <Border Background="#1E1E2E" CornerRadius="16" BorderThickness="1.5" BorderBrush="#25FFFFFF" Padding="25">
+                                        <StackPanel Spacing="15" HorizontalAlignment="Center">
+                                            <TextBlock Text="TODAY'S READINESS SCORE" FontSize="12" FontWeight="Bold" Foreground="#A6ADC8" LetterSpacing="1" HorizontalAlignment="Center"/>
+                                            
+                                            <!-- Readiness Glowing Visual indicator -->
+                                            <Panel Width="150" Height="150">
+                                                <!-- Inner glow border representing score status -->
+                                                <Border Width="130" Height="130" CornerRadius="65" BorderThickness="8" BorderBrush="#313244">
+                                                    <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                                                        <StackPanel HorizontalAlignment="Center">
+                                                            <TextBlock Text="{Binding LatestReadinessScore}" FontSize="40" FontWeight="Black" Foreground="#FFFFFF" HorizontalAlignment="Center"/>
+                                                            <TextBlock Text="%" FontSize="14" Foreground="#A6ADC8" HorizontalAlignment="Center"/>
+                                                        </StackPanel>
+                                                    </Grid>
+                                                </Border>
+                                            </Panel>
+
+                                            <!-- Key metrics breakdowns -->
+                                            <Grid ColumnDefinitions="*,*" Width="250" Margin="0,10,0,0">
+                                                <StackPanel Grid.Column="0" HorizontalAlignment="Center" Spacing="4">
+                                                    <TextBlock Text="RECOVERY" FontSize="10" Foreground="#A6ADC8" FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding LatestRecoveryScore, StringFormat='{}{0}%'}" FontSize="18" FontWeight="Black" Foreground="#89B4FA" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                                <StackPanel Grid.Column="1" HorizontalAlignment="Center" Spacing="4">
+                                                    <TextBlock Text="DAILY STRAIN" FontSize="10" Foreground="#A6ADC8" FontWeight="Bold"/>
+                                                    <TextBlock Text="{Binding LatestDailyStrain, StringFormat='{}{0}%'}" FontSize="18" FontWeight="Black" Foreground="#F38BA8" HorizontalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Actionable Daily Coaching Advice Card -->
+                                    <Border Background="#1E1E2E" CornerRadius="16" BorderThickness="1.5" BorderBrush="#25FFFFFF" Padding="20">
+                                        <StackPanel Spacing="10">
+                                            <TextBlock Text="COACHING &amp; ADVICE" FontSize="12" FontWeight="Bold" Foreground="#A6E3A1" LetterSpacing="1"/>
+                                            <TextBlock Text="{Binding CoachingAdvice}" FontSize="13" Foreground="#CDD6F4" TextWrapping="Wrap" LineHeight="20"/>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </ScrollViewer>
+
+                            <!-- Right Column: Nutrition Targets and Sync Summaries -->
+                            <ScrollViewer Grid.Column="1" Margin="15,0,0,0">
+                                <StackPanel Spacing="20">
+                                    <!-- Calorie Target & Macro Distributions -->
+                                    <Border Background="#1E1E2E" CornerRadius="16" BorderThickness="1.5" BorderBrush="#25FFFFFF" Padding="25">
+                                        <StackPanel Spacing="15">
+                                            <TextBlock Text="NUTRITION TARGETS &amp; TDEE" FontSize="12" FontWeight="Bold" Foreground="#A6ADC8" LetterSpacing="1"/>
+                                            
+                                            <Grid ColumnDefinitions="*,*">
+                                                <StackPanel Grid.Column="0" Spacing="2">
+                                                    <TextBlock Text="COMPUTED TDEE" FontSize="10" Foreground="#A6ADC8"/>
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <TextBlock Text="{Binding LatestTdeeCalculated}" FontSize="24" FontWeight="Black" Foreground="#FFFFFF"/>
+                                                        <TextBlock Text="kcal" FontSize="11" Foreground="#A6ADC8" VerticalAlignment="Bottom" Margin="0,0,0,4"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                                
+                                                <StackPanel Grid.Column="1" Spacing="2">
+                                                    <TextBlock Text="CALORIC TARGET" FontSize="10" Foreground="#89B4FA"/>
+                                                    <StackPanel Orientation="Horizontal" Spacing="4">
+                                                        <TextBlock Text="{Binding LatestCalorieTarget, FallbackValue='N/A'}" FontSize="24" FontWeight="Black" Foreground="#89B4FA"/>
+                                                        <TextBlock Text="kcal" FontSize="11" Foreground="#A6ADC8" VerticalAlignment="Bottom" Margin="0,0,0,4"/>
+                                                    </StackPanel>
+                                                </StackPanel>
+                                            </Grid>
+
+                                            <Border Height="1" Background="#313244" Margin="0,5"/>
+
+                                            <TextBlock Text="MACRONUTRIENT SPLIT (PROTEIN / CARBS / FAT)" FontSize="10" FontWeight="Bold" Foreground="#A6ADC8" LetterSpacing="0.5"/>
+                                            
+                                            <Grid ColumnDefinitions="*,*,*">
+                                                <Border Grid.Column="0" Background="#2A2438" CornerRadius="12" Padding="12" Margin="0,0,6,0">
+                                                    <StackPanel HorizontalAlignment="Center">
+                                                        <TextBlock Text="🍖 PROTEIN" FontSize="10" Foreground="#F5C2E7" FontWeight="Bold"/>
+                                                        <TextBlock Text="{Binding ProteinTarget, StringFormat='{}{0}g'}" FontSize="18" FontWeight="Black" Foreground="#FFFFFF" Margin="0,4,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+                                                
+                                                <Border Grid.Column="1" Background="#202A3C" CornerRadius="12" Padding="12" Margin="6,0,6,0">
+                                                    <StackPanel HorizontalAlignment="Center">
+                                                        <TextBlock Text="🍞 CARBS" FontSize="10" Foreground="#89B4FA" FontWeight="Bold"/>
+                                                        <TextBlock Text="{Binding CarbsTarget, StringFormat='{}{0}g'}" FontSize="18" FontWeight="Black" Foreground="#FFFFFF" Margin="0,4,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+
+                                                <Border Grid.Column="2" Background="#24302E" CornerRadius="12" Padding="12" Margin="6,0,0,0">
+                                                    <StackPanel HorizontalAlignment="Center">
+                                                        <TextBlock Text="🥑 FAT" FontSize="10" Foreground="#A6E3A1" FontWeight="Bold"/>
+                                                        <TextBlock Text="{Binding FatTarget, StringFormat='{}{0}g'}" FontSize="18" FontWeight="Black" Foreground="#FFFFFF" Margin="0,4,0,0"/>
+                                                    </StackPanel>
+                                                </Border>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Quick Actions & Ingestion Panel -->
+                                    <Border Background="#1E1E2E" CornerRadius="16" BorderThickness="1.5" BorderBrush="#25FFFFFF" Padding="20">
+                                        <StackPanel Spacing="12">
+                                            <TextBlock Text="QUICK ACTIONS" FontSize="12" FontWeight="Bold" Foreground="#A6ADC8" LetterSpacing="1"/>
+                                            <Grid ColumnDefinitions="*,*,*">
+                                                <Button Grid.Column="0" Command="{Binding ImportHevyCsvCommand}" Background="#F5C2E7" Foreground="#11111B" FontSize="12" FontWeight="Bold" CornerRadius="8" Padding="10,12" Margin="0,0,6,0" HorizontalAlignment="Stretch">
+                                                    <TextBlock Text="Import Hevy CSV" HorizontalAlignment="Center"/>
+                                                </Button>
+                                                <Button Grid.Column="1" Command="{Binding ImportCronoCsvCommand}" Background="#89B4FA" Foreground="#11111B" FontSize="12" FontWeight="Bold" CornerRadius="8" Padding="10,12" Margin="6,0,6,0" HorizontalAlignment="Stretch">
+                                                    <TextBlock Text="Import Crono CSV" HorizontalAlignment="Center"/>
+                                                </Button>
+                                                <Button Grid.Column="2" Command="{Binding RecalculateAllCommand}" Background="#A6E3A1" Foreground="#11111B" FontSize="12" FontWeight="Bold" CornerRadius="8" Padding="10,12" Margin="6,0,0,0" HorizontalAlignment="Stretch">
+                                                    <TextBlock Text="Recalculate All" HorizontalAlignment="Center"/>
+                                                </Button>
+                                            </Grid>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </ScrollViewer>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- TAB 2: WELLNESS TRENDS -->
+                    <TabItem Header="Wellness Trends" FontSize="14" FontWeight="Bold" Height="40">
+                        <Border Background="#1E1E2E" CornerRadius="16" BorderThickness="1.5" BorderBrush="#25FFFFFF" Padding="25" Margin="0,15,0,0">
+                            <Grid RowDefinitions="Auto,*">
+                                <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,15">
+                                    <TextBlock Text="CARDIOVASCULAR &amp; SLEEP FLUCTUATIONS" FontSize="16" FontWeight="Black" Foreground="#FFFFFF"/>
+                                    <TextBlock Text="Analyze your sleeping heart rate variability (HRV) and sleeping duration over the last 30 days." FontSize="12" Foreground="#A6ADC8"/>
+                                </StackPanel>
+
+                                <!-- LiveCharts2 Telemetry Downsampled Chart -->
+                                <lvc:CartesianChart Grid.Row="1" 
+                                                    Series="{Binding WellnessSeries}"
+                                                    XAxes="{Binding WellnessXAxes}"
+                                                    Height="400"/>
+                            </Grid>
+                        </Border>
+                    </TabItem>
+
+                    <!-- TAB 3: HYPERTROPHY & VOLUME ANALYTICS -->
+                    <TabItem Header="Volume &amp; 1RM Analytics" FontSize="14" FontWeight="Bold" Height="40">
+                        <Grid ColumnDefinitions="*,*" Margin="0,15,0,0">
+                            
+                            <!-- Left: Hypertrophy Muscle Group Volume Horizontal bars -->
+                            <Border Grid.Column="0" Background="#1E1E2E" CornerRadius="16" BorderThickness="1.5" BorderBrush="#25FFFFFF" Padding="20" Margin="0,0,10,0">
+                                <Grid RowDefinitions="Auto,*">
+                                    <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,15">
+                                        <TextBlock Text="WEEKLY HYPERTROPHY VOLUME" FontSize="14" FontWeight="Black" Foreground="#FFFFFF"/>
+                                        <TextBlock Text="Weekly Hard Sets (RPE >= 7) completed per target muscle group." FontSize="11" Foreground="#A6ADC8"/>
+                                    </StackPanel>
+                                    
+                                    <lvc:CartesianChart Grid.Row="1"
+                                                        Series="{Binding HypertrophyVolumeSeries}"
+                                                        XAxes="{Binding HypertrophyXAxes}"/>
+                                </Grid>
+                            </Border>
+
+                            <!-- Right: Estimated 1RM History line chart -->
+                            <Border Grid.Column="1" Background="#1E1E2E" CornerRadius="16" BorderThickness="1.5" BorderBrush="#25FFFFFF" Padding="20" Margin="10,0,0,0">
+                                <Grid RowDefinitions="Auto,Auto,*">
+                                    <StackPanel Grid.Row="0" Spacing="4" Margin="0,0,0,10">
+                                        <TextBlock Text="ESTIMATED ONE-REP MAX HISTORY" FontSize="14" FontWeight="Black" Foreground="#FFFFFF"/>
+                                        <TextBlock Text="Epley Estimated 1RM (caps sets to Reps &lt;= 10) for selected exercise." FontSize="11" Foreground="#A6ADC8"/>
+                                    </StackPanel>
+
+                                    <!-- Exercise Selection Dropdown -->
+                                    <ComboBox Grid.Row="1"
+                                              ItemsSource="{Binding ExercisesList}"
+                                              SelectedItem="{Binding SelectedExercise}"
+                                              HorizontalAlignment="Stretch"
+                                              Margin="0,0,0,15"/>
+
+                                    <lvc:CartesianChart Grid.Row="2"
+                                                        Series="{Binding Exercise1RmSeries}"
+                                                        XAxes="{Binding Exercise1RmXAxes}"/>
+                                </Grid>
+                            </Border>
+                        </Grid>
+                    </TabItem>
+
+                    <!-- TAB 4: INTEGRATIONS & API CONFIG -->
+                    <TabItem Header="Integrations &amp; API" FontSize="14" FontWeight="Bold" Height="40">
+                        <Border Background="#1E1E2E" CornerRadius="16" BorderThickness="1.5" BorderBrush="#25FFFFFF" Padding="25" Margin="0,15,0,0">
+                            <ScrollViewer>
+                                <Grid RowDefinitions="Auto,*" ColumnDefinitions="*,*">
+                                    <!-- Compliance Headers -->
+                                    <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Spacing="4" Margin="0,0,0,25">
+                                        <TextBlock Text="SUUNTO CLOUD API CONFIGURATION" FontSize="16" FontWeight="Black" Foreground="#FFFFFF"/>
+                                        <TextBlock Text="Manage background heartbeat syncing, OAuth parameters, and data disconnect rules." FontSize="12" Foreground="#A6ADC8"/>
+                                        <!-- Active compliance labeling -->
+                                        <StackPanel Orientation="Horizontal" Spacing="6" Margin="0,5,0,0">
+                                            <Border Background="#24302E" CornerRadius="4" Padding="6,2">
+                                                <TextBlock Text="Compatible with Suunto" FontSize="10" FontWeight="Bold" Foreground="#A6E3A1"/>
+                                            </Border>
+                                            <!-- Hyperlink to suunto.com -->
+                                            <TextBlock Text="Visit Suunto Official Website" FontSize="11" Foreground="#89B4FA" Cursor="Hand" TextDecorations="Underline"/>
+                                        </StackPanel>
+                                    </StackPanel>
+
+                                    <!-- Left: Sync Credentials -->
+                                    <StackPanel Grid.Row="1" Grid.Column="0" Spacing="15" Margin="0,0,20,0">
+                                        <TextBlock Text="API Credentials &amp; Tokens" FontSize="13" FontWeight="Bold" Foreground="#F5C2E7"/>
+                                        
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="OAuth Client ID" FontSize="11" Foreground="#A6ADC8"/>
+                                            <TextBox Text="{Binding SuuntoClientId, Mode=TwoWay}" PlaceholderText="Enter Suunto Client ID..." Theme="{StaticResource SimpleTextBox}" Background="#11111B"/>
+                                        </StackPanel>
+
+                                        <StackPanel Spacing="6">
+                                            <TextBlock Text="OAuth Client Secret" FontSize="11" Foreground="#A6ADC8"/>
+                                            <TextBox Text="{Binding SuuntoClientSecret, Mode=TwoWay}" PasswordChar="*" PlaceholderText="Enter Suunto Client Secret..." Theme="{StaticResource SimpleTextBox}" Background="#11111B"/>
+                                        </StackPanel>
+
+                                        <!-- Express Consent Prompt Checkbox -->
+                                        <CheckBox IsChecked="{Binding IsSuuntoConsentChecked, Mode=TwoWay}" Margin="0,10,0,0">
+                                            <TextBlock Text="I explicitly consent to allow the local app to sync my heart rate metrics from Suunto API in the background." FontSize="11" Foreground="#CDD6F4" TextWrapping="Wrap"/>
+                                        </CheckBox>
+
+                                        <Button Command="{Binding SaveSuuntoConfigCommand}" Background="#F5C2E7" Foreground="#11111B" FontWeight="Bold" CornerRadius="8" Padding="15,10" HorizontalAlignment="Left">
+                                            <TextBlock Text="Save API Config"/>
+                                        </Button>
+                                    </StackPanel>
+
+                                    <!-- Right: Connection Status & Instant Disconnect -->
+                                    <Border Grid.Row="1" Grid.Column="1" Background="#11111B" CornerRadius="12" Padding="20" Margin="20,0,0,0" BorderThickness="1" BorderBrush="#313244">
+                                        <StackPanel Spacing="15">
+                                            <TextBlock Text="Integration Status" FontSize="13" FontWeight="Bold" Foreground="#A6ADC8"/>
+                                            
+                                            <Grid ColumnDefinitions="Auto,*">
+                                                <TextBlock Grid.Column="0" Text="OAuth Token State: " FontSize="12" Foreground="#A6ADC8"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding IsSuuntoConnected, Converter={x:Static StringConverters.IsNullOrEmpty}, FallbackValue='CONNECTED', TargetNullValue='DISCONNECTED'}" FontWeight="Bold" Foreground="#A6E3A1" Margin="5,0,0,0"/>
+                                            </Grid>
+
+                                            <TextBlock Text="Offline-First Privacy Compliance:" FontSize="11" FontWeight="Bold" Foreground="#CDD6F4"/>
+                                            <TextBlock Text="Your Suunto API tokens and biometric database records are stored only in your local application data path. No passwords or credentials are sent to external servers." FontSize="11" Foreground="#A6ADC8" TextWrapping="Wrap" LineHeight="16"/>
+
+                                            <!-- Instant Disconnect button -->
+                                            <Button Command="{Binding DisconnectSuuntoCommand}" Background="#F38BA8" Foreground="#11111B" FontWeight="Bold" CornerRadius="8" Padding="15,10" HorizontalAlignment="Stretch" Margin="0,15,0,0">
+                                                <TextBlock Text="⚠️ Clear &amp; Disconnect Suunto Integration" HorizontalAlignment="Center"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </ScrollViewer>
+                        </Border>
+                    </TabItem>
+                </TabControl>
+            </Grid>
+        </Border>
+    </Panel>
 </Window>

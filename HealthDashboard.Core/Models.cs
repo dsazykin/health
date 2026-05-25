@@ -49,6 +49,10 @@ namespace HealthDashboard.Core.Models
 
         public int CronoFatG { get; set; }
 
+        public double? RecoveryScore { get; set; }  // Composite 0-100
+        public double? ReadinessScore { get; set; } // Composite 0-100
+        public double? DailyStrain { get; set; }    // Composite 0-100
+
         // Navigation Property
         public virtual ICollection<Workout> Workouts { get; set; } = new List<Workout>();
     }
@@ -79,6 +83,8 @@ namespace HealthDashboard.Core.Models
         public int MaxHeartRate { get; set; }
 
         public int StrainScore { get; set; }
+
+        public double? WorkoutStrainScore { get; set; } // Specific workout strain
 
         // Navigation Properties
         public virtual DailyMetric? DailyMetric { get; set; }
