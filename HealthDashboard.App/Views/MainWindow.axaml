@@ -274,12 +274,12 @@
                                         
                                         <StackPanel Spacing="6">
                                             <TextBlock Text="OAuth Client ID" FontSize="11" Foreground="#A6ADC8"/>
-                                            <TextBox Text="{Binding SuuntoClientId, Mode=TwoWay}" PlaceholderText="Enter Suunto Client ID..." Theme="{StaticResource SimpleTextBox}" Background="#11111B"/>
+                                            <TextBox Text="{Binding SuuntoClientId, Mode=TwoWay}" Watermark="Enter Suunto Client ID..." Theme="{StaticResource SimpleTextBox}" Background="#11111B"/>
                                         </StackPanel>
 
                                         <StackPanel Spacing="6">
                                             <TextBlock Text="OAuth Client Secret" FontSize="11" Foreground="#A6ADC8"/>
-                                            <TextBox Text="{Binding SuuntoClientSecret, Mode=TwoWay}" PasswordChar="*" PlaceholderText="Enter Suunto Client Secret..." Theme="{StaticResource SimpleTextBox}" Background="#11111B"/>
+                                            <TextBox Text="{Binding SuuntoClientSecret, Mode=TwoWay}" PasswordChar="*" Watermark="Enter Suunto Client Secret..." Theme="{StaticResource SimpleTextBox}" Background="#11111B"/>
                                         </StackPanel>
 
                                         <!-- Express Consent Prompt Checkbox -->
